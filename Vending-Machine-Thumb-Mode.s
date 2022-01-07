@@ -42,97 +42,132 @@ startthumb:
 @*****************
 inventory:
 @*****************
+
 @ This section initializes the specific registers that will be used during the program 
 @ for the inventory of the vending machine, the change inserted, and the user options. 
+
 	ldr r6, = changeInserted		@ Puts the address of the change inserted in r6 
 	ldr r6, [r6] 				@ Reads the contents of changeInserted and stores it in r6
+	
 	ldr r7, = userOption 			@ Puts the address of the user option in r7
 	ldr r7, [r7] 				@ Reads the contents of userOption and stores it in r7
+	
 	ldr r1, = gumInventory 			@ Puts the address of the gum inventory in r8
 	ldr r1, [r1] 				@ Reads the contents of gumInventory and stores it in r8
+	
 	mov r8, r1
 	ldr r1, = peanutInventory 		@ Puts the address of the peanut inventory in r9
 	ldr r1, [r1] 				@ Reads the contents of peanutInventory and stores it in r9
+	
 	mov r9, r1
 	ldr r1, = cheesecrackerInventory 	@ Puts the address of the cheese cracker inventory in r10
 	ldr r1, [r1] 				@ Reads the contents of cheesecrackerInventory and stores it in r10
+	
 	mov r10, r1
 	ldr r1, = mmInventory 			@ Puts the address of the M&Ms inventory in r11
 	ldr r1, [r1] 				@ Reads the contents of mmInventory and stores it in r11
-	mov r11, r1	
+	
+	mov r11, r1
+	
 @*****************
 welcome_prompt:
 @*****************
+
 @ This section prints a welcome prompt and the options available to the screen. It scans the input for invalid inputs,
 @ and uses r7 for functionality when it comes to option handling. Also, this section checks to see if the user entered
 @ the secret code to print the current inventory. 
+
 	ldr r0, = welcomePrompt		@ Puts the address of the string that welcomes the user in r0 
 	bl printf 			@ and prints it.
+	
 user_options:
+
 	ldr r0, = options 		@ Puts the address of the string that presents the options to the user in r0
 	bl printf 			@ and prints it. 
+	
 	ldr r0, = userInput		@ Set up to read in one string
 	ldr r1, = input 		@ Load r1 with the address of where the input value will be stored 
 	bl scanf 			@ Scan the kayboard
 	cmp r0, #READERROR		@ Check for read error 
 	beq read_error			@ If there was a read error, it branches to read_error
+	
 	ldr r1, = input			@ Have to reload r1 because it gets wiped out 
 	ldr r1, [r1] 			@ Read the contents of input and store it in r1 so that it can be compared 
+	
 	cmp r1, #'g'			@ If input is equal to 'g', 
 	beq chosenGum
+	
 	cmp r1, #'G'			@ If input is equal to 'G', 
 	beq chosenGum
+	
 	cmp r1, #'p' 			@ If input is equal to 'p', 
 	beq chosenPeanuts
+	
 	cmp r1, #'P'			@ If input is equal to 'P', 
 	beq chosenPeanuts
+	
 	cmp r1, #'c'			@ If input is equal to 'c', 
 	beq chosenCheeseCrackers
+	
 	cmp r1, #'C'			@ If input is equal to 'C', 
 	beq chosenCheeseCrackers
+	
 	cmp r1, #'m'			@ If input is equal to 'm', 
 	beq chosenMMs
+	
 	cmp r1, #'M' 			@ If input is equal to 'M', 
 	beq chosenMMs
+	
 	cmp r1, #'x'			@ If input is equal to 'x', 
 	beq chosenSecret
+	
 	cmp r1, #'X'			@ If input is equal to 'X', 
 	beq chosenSecret
 	b checkPrintOrError
+	
 chosenGum:
 	mov r7, #1			@ move the integer 1 into r7.
 	b checkPrintOrError
+	
 chosenPeanuts:
 	mov r7, #2			@ move the integer 2 into r7.
 	b checkPrintOrError
+	
 chosenCheeseCrackers:
 	mov r7, #3			@ move the integer 3 into r7.
 	b checkPrintOrError
+	
 chosenMMs:
 	mov r7, #4			@ move the integer 4 into r7.
 	b checkPrintOrError
+	
 chosenSecret:
 	mov r7, #5			@ move the integer 5 into r7.
 	b checkPrintOrError
+	
 checkPrintOrError:
 	cmp r7, #5			@ If r7 is equal to 5,
 	beq print_inventory_copy	@ branch to print the current inventory. 
 	cmp r7, #0 			@ If r7 is still zero, 
 	beq read_error			@ then none of the options were chosen so branch to read_error.
 	b user_Confirmation
+	
 @**********************
 print_inventory_copy:
 @**********************
 @ This section is the secret option to display the current inventory to the user. 
+
 	mov r1, r11			@ Move the inventory of the M&Ms in r1
 	mov r2, r10			@ Move the inventory of the cheese crackers in r2
 	ldr r0, = inventoryPrompt	@ Puts the address of the string that displays the current inventory in r0
 	bl printf 			@ and prints it. 
+	
 	mov r1, r9			@ Move the inventory of the peanuts in r1
 	mov r2, r8			@ Move the inventory of the gum in r2
 	ldr r0, = inventoryPrompt2	@ Puts the address of the string that displays the current inventory in r0
 	bl printf 			@ and prints it.
 	b reset				@ Branch to reset 
+	
 @*********************
 user_Confirmation:
 @*********************
@@ -140,103 +175,133 @@ user_Confirmation:
 @ given the program confirmation, it directs the code to the appropriate section to check for current inventory. 
 @ If there is still available inventory for the chosen option, it branches to the calculation portion of the program. 
 @ If the chosen item is out of stock, it notifys the user and prompts the user to choose another item.  
+
 	mov r5, #0 			@ This register is used for functionality with input errors when asking confirmation
+	
 	ldr r0, = gumConfirmation	@ Puts the address of the gum confirmation question in r0
 	cmp r7, #1			@ If r7 is equal to 1 (representing the gum option), 
 	beq printStatement 			
+	
 	ldr r0, = peanutConfirmation 	@ Puts the address of the peanut confirmation question in r0
 	cmp r7, #2			@ If r7 is equal to 2 (representing the peanut option),
 	beq printStatement
+	
 	ldr r0, = cheesecrackerConfirmation 	@ Puts the address of the cheese cracker confirmation question in r0
 	cmp r7, #3				@ If r7 is equal to 3 (representing the cheese cracker option),
 	beq printStatement
+	
 	ldr r0, = mmConfirmation	@ Puts the address of the M&Ms confirmation question in r0
 	cmp r7, #4			@ If r7 is equal to 4 (representing the M&Ms option),
 	beq printStatement
+	
 	b checkInput
+	
 printStatement:
 	bl printf
+	
 checkInput:
 	ldr r0, = confirmationInput	@ Setup to read in one string	
 	ldr r1, = inputConfirmation 	@ Load r1 with the address of where the input value will be stored 
 	bl scanf 			@ Scan the kayboard
 	cmp r0, #READERROR		@ Check for read error 
 	beq read_confirmation_error	@ If there was a read error, it branches to read_confirmation_error
+	
 	ldr r1, = inputConfirmation	@ Have to reload r1 because it gets wiped out 
-	ldr r1, [r1] 			@ Read the contents of input and store it in r1 so that it can be compared 
+	ldr r1, [r1] 			@ Read the contents of input and store it in r1 so that it can be compared
+	
 	cmp r1, #'y' 			@ If the input is equal to 'y',
 	beq confirmed			
+	
 	cmp r1, #'Y'			@ If the input is equal to 'Y',
 	beq confirmed
+	
 	cmp r1, #'n' 			@ If the input is equal to 'n',
 	beq unconfirmed
+	
 	cmp r1, #'N'			@ If the input is equal to 'N',
 	beq unconfirmed
+	
 	cmp r5, #0			@ If r5 is equal to 0, 
 	beq read_confirmation_error	@ then none of the options were chosen so branch to read_confirmation_error.
+	
 confirmed:
 	mov r5, #1			@ move the integer 1 in r5
-	b direct 
+	b direct
+	
 unconfirmed:
 	mov r5, #2			@ move the integer 2 in r5
 	b reset
+	
 direct: 
 	cmp r7, #1			@ If r7 is equal to 1, 
 	beq gum_inventory		@ branch to check the gum inventory  
+	
 	cmp r7, #2			@ If r7 is equal to 2, 
 	beq peanut_inventory		@ branch to check the peanut inventory 
+	
 	cmp r7, #3			@ If r7 is equal to 3, 	
 	beq cheesecrackers_inventory	@ branch to check the cheese crackers inventory 
+	
 	cmp r7, #4			@ If r7 is equal to 4, 
 	beq mm_inventory		@ branch to check the M&Ms inventory 
+	
 gum_inventory:
 	mov r1, r8
 	cmp r1, #0			@ If the gum inventory is equal to 0, 
 	beq printInventoryMessage 
 	b gum_calculation		@ If there is still some left in stock, branch to the calculation function
+	
 peanut_inventory:
 	mov r1, r9
 	cmp r1, #0			@ If the peanut inventory is equal to 0, 
 	beq printInventoryMessage
 	b peanut_calculation		@ If there is still some left in stock, branch to the calculation function
+	
 cheesecrackers_inventory:
 	mov r1, r10
 	cmp r1, #0			@ If the cheese crackers inventory is equal to 0,
 	beq printInventoryMessage 
 	b cheesecrackers_calculation	@ If there is still some left in stock, branch to the calculation function
+	
 mm_inventory:
 	mov r1, r11
 	cmp r1, #0			@ If the M&Ms inventory is equal to 0,
 	beq printInventoryMessage
 	b mm_calculation		@ If there is still some left in stock, branch to the calculation function
+	
 printInventoryMessage:
 	ldr r0, = inventoryMessage 	@ print a message to notfiy the user and
 	bl printf 			@ branch to reset to prompt for antoher option.
 	b reset
+	
 @*****************
 read_error:
 @*****************
 @ Since an invalid entry was made we now have to clear out the input buffer by 
 @ reading with this format %[^\n] which will read the buffer until the user 
 @ presses the CR. 
+
 	ldr r0, = errorMessage 	@ Put the address of the error message in r0
 	bl printf 		@ and prints it. 
 	ldr r0, = strInputPattern 
 	ldr r1, = strInputError	@ Put address into r1 for read.
 	bl scanf 		@ Scan the keyboard. 
 	b user_options		@ Branch back to user_options 
+	
 @*****************
 read_confirmation_error:
 @*****************
 @ Since an invalid entry was made we now have to clear out the input buffer by 
 @ reading with this format %[^\n] which will read the buffer until the user 
 @ presses the CR. 
+
 	ldr r0, = confirmationMessage 	@ Put the address of the error message in r0
 	bl printf 		@ and prints it. 
 	ldr r0, = strInputPattern 
 	ldr r1, = strInputError	@ Put address into r1 for read.
 	bl scanf 		@ Scan the keyboard. 
 	b user_Confirmation	@ Branch back to user_Confirmation
+	
 @*******************
 gum_calculation:
 @*******************
@@ -246,304 +311,391 @@ gum_calculation:
 @ it less than what is required, it prompts the user to enter more money. If the amount inserted is greater than or 
 @ equal to the required amount, it continues with the transaction by notfiying the user, returning any change, 
 @ dispensing the item, and decrementing the inventory. 
+
 	ldr r0, = gumRequirements	@ Puts the address of the string that tells the required amount in r0
 	bl printf 			@ and prints it. 
+	
 	ldr r0, = coinSelection 	@ Puts the address of the string that gives the options of coins in r0 
 	bl printf 			@ and prints it. 
+	
 	ldr r0, = changeChoice		@ Setup to read in a string 
 	ldr r1, = inputChange 		@ Load r1 with the address of where the input value will be stored 
 	bl scanf 			@ Scan the kayboard
-	cmp r0, #READERROR		@ Check for read error 
+	cmp r0, #READERROR		@ Check for read error
 	beq read_change_error		@ If there was a read error, it branches to read_change_error
+	
 	ldr r1, = inputChange		@ Have to reload r1 because it gets wiped out 
 	ldr r1, [r1] 			@ Read the contents of inputChange and store it in r1 so that it can be compared 
 	b insert 			@ Branch to insert to calculate the current total inserted	
+	
 check_gum_amount: 
 	cmp r6, #50 			@ If the current total inserted is less than 50,
 	blt currently_inserted_gum 
 	b branch_to_complete_gum
+	
 currently_inserted_gum:
 	mov r1, r6			@ move the total to r1 and 
 	ldr r0, = totalInserted 	@ print the total inserted to the screen
 	bl printf 
+	
 branch_to_complete_gum:
 	cmp r6, #50			@ If the total is greater than or equal to 50, 
 	bge complete_gum_transaction	@ branch to complete the transaction 
 	b reset_change			@ Branch to reset change so the user may enter more money 
+	
 complete_gum_transaction:
 	mov r1, r6			@ Move the total to r1
 	ldr r0, = totalInserted		@ Print the total inserted to the screen 
 	bl printf 
+	
 	mov r1, r6			@ Move the total back to r1 since it gets wiped out 
 	ldr r0, = enoughNotification 	@ Puts the address of the string to notifying a sufficient amount has been
 	bl printf 			@ inserted to r0 and prints it 
+	
 	sub r6, r6, #50 		@ Subtract 50 from the total inserted
 	mov r1, r6			@ Move the remaining change to r1 to print the message
 	ldr r0, = changeReturned	@ that states how much change is returned back to the user. 
 	bl printf 
+	
 	ldr r6, = changeInserted	@ Puts the address of the inital value of change inserted back to r6
 	ldr r6, [r6]			@ Reads the contents of changeInserted and stores it in r6
 	ldr r0, = gumDispense 		@ Puts the address of the string that notifys the user that the item has been
 	bl printf 			@ dispensed in r0 and prints it. 
+	
 	mov r1, r8
 	sub r1, r1, #1			@ Subtract one from the total inventory of gum 
 	mov r8, r1
 	b reset				@ Branch back to reset to start again 
+	
 @**************
 reset:
 @**************
 @ This section clears the input buffer and the option chosen by the user. It, then, checks to see if the
 @ vending machine has enough inventory to run again. 
+
 	mov r7, #0			@ resets the user option chosen 
 	ldr r0, =strInputPattern 	
 	ldr r1, = strInputError 	@ Put address into r1 for read.
 	bl scanf 			@ Scan the keyboard
+	
 checkGumInventory:
 	mov r1, r8
 	cmp r1, #0 			@ If the inventory of gum is equal to 0,
 	beq checkPeanutInventory  
 	b user_options
+	
 checkPeanutInventory:
 	mov r1, r9
 	cmp r1, #0			@ and if the inventory of peanuts is equal to 0,
 	beq checkCheeseCrackerInventory
 	b user_options
+	
 checkCheeseCrackerInventory:
 	mov r1, r10 
 	cmp r1, #0			@ and if the inventory of cheese crackers is equal to 0,
 	beq checkMMInventory
 	b user_options
+	
 checkMMInventory:
 	mov r1, r11
 	cmp r1, #0 			@ and if the inventory of M&Ms is equal to 0, 
 	beq exit			@ then branch to exit to shut down the program.
 	b user_options			@ else, branch to user_options to restart process 
+	
 @**************
 insert:
 @**************	
 @ This section checks the input of the user by comparing it to multiple options that represent a certain coin. 
 @ The program then adds the appropriate coin to the total inserted amount, while checking for invalid inputs. 
 @ Then, it branches back to the appropriate calculation function, depending on the option chosen. 
+
 	mov r4, #0 			@ r4 is used for functionality with input choice 
 	cmp r1, #'d'			@ If input is equal to 'd',
 	beq dimeSelected
+	
 	cmp r1, #'D'			@ If input is equal to 'D',
 	beq dimeSelected
+	
 	cmp r1, #'q'			@ If input is equal to 'q',
 	beq quarterSelected
+	
 	cmp r1, #'Q'			@ If input is equal to 'Q',
 	beq quarterSelected
+	
 	cmp r1, #'b' 			@ If input is equal to 'b',
 	beq billSelected
+	
 	cmp r1, #'B' 			@ If input is equal to 'B',
 	beq billSelected
+	
 	cmp r4, #0			@ If none of the available options were chosen, 
 	beq read_change_error		@ branch to read_change_error
 	b finishInsert
+	
 dimeSelected:
 	mov r4, #1			@ the move the integer 1 in r4
 	add r6, r6, #10 		@ add 10 to the total inserted 
 	b finishInsert
+	
 quarterSelected:
 	mov r4, #2			@ the move the integer 2 in r4
 	add r6, r6, #25			@ add 25 to the total inserted 
 	b finishInsert
+	
 billSelected:	
 	mov r4, #3			@ the move the integer 3 in r4
 	add r6, r6, #100		@ add 100 to the total inserted
 	b finishInsert
+	
 @**************
 reset_change:
 @**************
 @ This section clears the input buffer and branches back to the appropriate calculation depending on the option
 @ chosen by the user. 
+
 	ldr r0, = strInputPattern 	
 	ldr r1, = strInputError 	@ Put address into r1 for read.
 	bl scanf 			@ Scan the keyboard
+	
 	cmp r7, #1			@ If the option chosen by the user is gum, 
 	beq gum_calculation		@ branch back to the gum calculation. 
+	
 	cmp r7, #2			@ If the option chosen by the user is peanuts, 
-	beq peanut_calculation		@ branch back to the peanut calculation. 
+	beq peanut_calculation		@ branch back to the peanut calculation.
+	
 	cmp r7, #3			@ If the option chosen by the user is cheese crackers,
 	beq cheesecrackers_calculation 	@ branch back to the cheese crackers calculation. 
+	
 	cmp r7, #4			@ If the option chosen by the user is M&Ms, 
 	beq mm_calculation		@ branch back to the M&Ms calculation.
+	
 finishInsert:
 	cmp r7, #1			@ If the user option is equal to 1, 
 	beq check_gum_amount		@ branch back to finish the gum calculation 
+	
 	cmp r7, #2			@ If the user option is equal to 2,
 	beq check_peanut_amount		@ branch back to finish the peanut calculation 
+	
 	cmp r7, #3			@ If the user option is equal to 3, 
 	beq check_cheesecrackers_amount @ branch back to finish the cheese crackers calculation 
+	
 	cmp r7, #4			@ If the user option is equal to 4, 
 	beq check_mm_amount 		@ branch back to finish the M&Ms calculation
+	
 @*****************
 read_change_error:
 @*****************
 @ Since an invalid entry was made we now have to clear out the input buffer by 
 @ reading with this format %[^\n] which will read the buffer until the user 
 @ presses the CR. 
+
 	ldr r0, = changeMessage @ Put the address of the error message in r0
 	bl printf 		@ and prints it. 
+	
 	ldr r0, = strInputPattern 
 	ldr r1, = strInputError	@ Put address into r1 for read.
 	bl scanf 		@ Scan the keyboard. 
+	
 	cmp r7, #1		@ If r7 is equal to 1,
 	beq gum_calculation	@ branch back to gum_calculation
+	
 	cmp r7, #2		@ If r7 is equal to 2,
 	beq peanut_calculation 	@ branch back to peanut_calculation
+	
 	cmp r7, #3			@ If r7 is equal to 3,
 	beq cheesecrackers_calculation	@ branch back to cheesecrackers_calculation
+	
 	cmp r7, #4		@ If r7 is equal to 4,
 	beq mm_calculation	@ branch back to mm_calculation
+	
 @*********************
 peanut_calculation:
 @*********************
 @ This section prompts the user to enter the appropriate amount of money, gives options on what coins the user can
 @ insert, and checks for errors in user input. 
+
 	ldr r0, = peanutRequirements	@ Puts the address of the string that tells the required amount in r0
 	bl printf 			@ and prints it.
+	
 	ldr r0, = coinSelection 	@ Puts the address of the string that gives the options of coins in r0 
 	bl printf 			@ and prints it.
+	
 	ldr r0, = changeChoice		@ Setup to read in a string 
 	ldr r1, = inputChange 		@ Load r1 with the address of where the input value will be stored 
 	bl scanf 			@ Scan the kayboard
 	cmp r0, #READERROR		@ Check for read error 
 	beq read_change_error		@ If there was a read error, it branches to read_change_error
+	
 	ldr r1, = inputChange		@ Have to reload r1 because it gets wiped out 
 	ldr r1, [r1] 			@ Read the contents of inputChange and store it in r1 so that it can be compared
 	b insert 			@ Branch to insert to calculate the current total inserted
+	
 check_peanut_amount: 
 	cmp r6, #55 			@ If the current total inserted is less than 55,
 	blt currently_inserted_peanuts
 	b branch_to_complete_peanuts
+	
 currently_inserted_peanuts:
 	mov r1, r6			@ move the total to r1 and
 	ldr r0, = totalInserted		@ print the total inserted to the screen
 	bl printf 
+	
 branch_to_complete_peanuts: 
 	cmp r6, #55			@ If the total is greater than or equal to 55,
 	bge complete_peanut_transaction	@ branch to complete the transaction 
 	b reset_change			@ Branch to reset change so the user may enter more money 
+	
 complete_peanut_transaction:
 	mov r1, r6			@ Move the total to r1
 	ldr r0, = totalInserted		@ Print the total inserted to the screen 
 	bl printf 
+	
 	mov r1, r6			@ Move the total back to r1 since it gets wiped out 
 	ldr r0, = enoughNotification 	@ Puts the address of the string to notifying a sufficient amount has been
 	bl printf 			@ inserted to r0 and prints it 
+	
 	sub r6, r6, #55 		@ Subtract 55 from the total inserted
 	mov r1, r6			@ Move the remaining change to r1 to print the message
 	ldr r0, = changeReturned	@ that states how much change is returned back to the user. 
 	bl printf 
+	
 	ldr r6, = changeInserted	@ Puts the address of the inital value of change inserted back to r6
 	ldr r6, [r6] 			@ Reads the contents of changeInserted and stores it in r6
 	ldr r0, = peanutDispense 	@ Puts the address of the string that notifys the user that the item has been
 	bl printf 			@ dispensed in r0 and prints it. 
+	
 	mov r1, r9
 	sub r1, r1, #1			@ Subtract one from the total inventory of peanuts
 	mov r9, r1 
 	b reset				@ Branch back to reset to start again
+	
 check_mm_amount: 
 	cmp r6, #100 			@ If the current total inserted is less than 100,
 	blt currently_inserted_mm
 	b branch_to_complete_mm
+	
 @********	
 exit:		
 @********
 @ This section notifys to that user that the inventory is empty, forces the exit, and returns control back to OS. 
 	ldr r0, = inventoryEmpty 	@ Puts the address of the notice in r0 
+	
 	bl printf 			@ and prints it. 
 	mov r7, #0x01			@ End of my code. Force the exit and return control to OS
 	svc 0 
+	
 @****************************
 cheesecrackers_calculation:
 @****************************
 @ This section prompts the user to enter the appropriate amount of money, gives options on what coins the user can
 @ insert, and checks for errors in user input.  
+
 	ldr r0, = cheesecrackerRequirements	@ Puts the address of the string that tells the required amount in r0
 	bl printf 				@ and prints it.
+	
 	ldr r0, = coinSelection 	@ Puts the address of the string that gives the options of coins in r0 
 	bl printf 			@ and prints it.
+	
 	ldr r0, = changeChoice		@ Setup to read in a string 
 	ldr r1, = inputChange 		@ Load r1 with the address of where the input value will be stored 
 	bl scanf 			@ Scan the kayboard
 	cmp r0, #READERROR		@ Check for read error 
 	beq read_change_error		@ If there was a read error, it branches to read_change_error
+	
 	ldr r1, = inputChange		@ Have to reload r1 because it gets wiped out 
 	ldr r1, [r1] 			@ Read the contents of inputChange and store it in r1 so that it can be compared
 	b insert 			@ Branch to insert to calculate the current total inserted
+	
 @*******************
 mm_calculation: 
 @*******************
 @ This section prompts the user to enter the appropriate amount of money, gives options on what coins the user can
 @ insert, and checks for errors in user input.
+
 	ldr r0, = mmRequirements	@ Puts the address of the string that tells the required amount in r0
 	bl printf 			@ and prints it.
+	
 	ldr r0, = coinSelection 	@ Puts the address of the string that gives the options of coins in r0 
 	bl printf 			@ and prints it.
+	
 	ldr r0, = changeChoice		@ Setup to read in a string 
 	ldr r1, = inputChange 		@ Load r1 with the address of where the input value will be stored
 	bl scanf 			@ Scan the kayboard
 	cmp r0, #READERROR		@ Check for read error 
 	beq read_change_error		@ If there was a read error, it branches to read_change_error
+	
 	ldr r1, = inputChange		@ Have to reload r1 because it gets wiped out
 	ldr r1, [r1] 			@ Read the contents of inputChange and store it in r1 so that it can be compared
 	b insert 			@ Branch to insert to calculate the current total inserted
+	
 check_cheesecrackers_amount: 
 	cmp r6, #65 			@ If the current total inserted is less than 65,
 	blt currently_inserted_crackers
 	b branch_to_complete_crackers
+	
 currently_inserted_crackers:
 	mov r1, r6			@ move the total to r1 and
 	ldr r0, = totalInserted		@ print the total inserted to the screen
 	bl printf 
+	
 branch_to_complete_crackers:
 	cmp r6, #65				@ If the total is greater than or equal to 65,
 	bge complete_cheesecrackers_transaction	@ branch to complete the transaction 
-	b reset_change			@ Branch to reset change so the user may enter more money 
+	b reset_change				@ Branch to reset change so the user may enter more money 
+	
 complete_cheesecrackers_transaction:
 	mov r1, r6			@ Move the total to r1
 	ldr r0, = totalInserted		@ Print the total inserted to the screen 
 	bl printf 
+	
 	mov r1, r6			@ Move the total back to r1 since it gets wiped out 
 	ldr r0, = enoughNotification 	@ Puts the address of the string to notifying a sufficient amount has been
 	bl printf 			@ inserted to r0 and prints it 
+	
 	sub r6, r6, #65 		@ Subtract 65 from the total inserted
 	mov r1, r6			@ Move the remaining change to r1 to print the message
 	ldr r0, = changeReturned	@ that states how much change is returned back to the user.
 	bl printf 
+	
 	ldr r6, = changeInserted	@ Puts the address of the inital value of change inserted back to r6
 	ldr r6, [r6] 			@ Reads the contents of changeInserted and stores it in r6
 	ldr r0, = cheesecrackersDispense 	@ Puts the address of the string that notifys the user that the item has been
 	bl printf 				@ dispensed in r0 and prints it. 
+	
 	mov r1, r10
 	sub r1, r1, #1			@ Subtract one from the total inventory of cheese crackers
 	mov r10, r1
 	b reset				@ Branch back to reset to start again
+	
 currently_inserted_mm:
 	mov r1, r6			@ move the total to r1 and
 	ldr r0, = totalInserted		@ print the total inserted to the screen
 	bl printf 
+	
 branch_to_complete_mm:
 	cmp r6, #100			@ If the total is greater than or equal to 100,
 	bge complete_mm_transaction	@ branch to complete the transaction 
 	b reset_change			@ Branch to reset change so the user may enter more money 
+	
 complete_mm_transaction:
 	mov r1, r6			@ Move the total to r1
 	ldr r0, = totalInserted		@ Print the total inserted to the screen
 	bl printf 
+	
 	mov r1, r6			@ Move the total back to r1 since it gets wiped out 
 	ldr r0, = enoughNotification 	@ Puts the address of the string to notifying a sufficient amount has been
 	bl printf 			@ inserted to r0 and prints it 
+	
 	sub r6, r6, #100 		@ Subtract 100 from the total inserted
 	mov r1, r6			@ Move the remaining change to r1 to print the message
 	ldr r0, = changeReturned	@ that states how much change is returned back to the user.
 	bl printf 
+	
 	ldr r6, = changeInserted	@ Puts the address of the inital value of change inserted back to r6
 	ldr r6, [r6] 			@ Reads the contents of changeInserted and stores it in r6
 	ldr r0, = mmDispense 		@ Puts the address of the string that notifys the user that the item has been
 	bl printf 			@ dispensed in r0 and prints it. 
+	
 	mov r1, r11
 	sub r1, r1, #1			@ Subtract one from the total inventory of M&Ms
 	mov r11, r1
