@@ -92,7 +92,6 @@ welcome_prompt:
 	ldr r0, = strAmountDispensed 	  @ Puts the address of the string that displays the initial amount 
 	bl printf			  @ dispensed placed in registers 1, 2, and 3 and prints it. 
 
-
 @*******************
 get_input:
 @*******************  
