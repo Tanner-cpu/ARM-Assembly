@@ -54,6 +54,7 @@ get_input:
    ldr r0, =numInputPattern @ Setup to read in one number.
    ldr r1, =intInput        @ load r1 with the address of where the
                             @ input value will be stored. 
+			    
    bl  scanf                @ scan the keyboard.
    cmp r0, #READERROR       @ Check for a read error.
    beq readerror            @ If there was a read error, it branches to readerror. 
@@ -91,7 +92,7 @@ get_calculation:
 
    ldr r4, =startingPoint    @ Since printf and scanf changes the values of r0-r3 and r12,
    ldr r4, [r4] 	     @ The following registers are used to keep data needed for the 
- 			     @ calculation of the factorials after each iteration of the  
+ 			     @ calculation of the factorials after each iteration of the 
    ldr r5, =result	     @ upcoming loop (r4, r5, r6).
    ldr r5, [r5]		     @ StartingPoint is used to keep track of which factorial iteration
 			     @ the program is on in comparison to the given input. 
@@ -99,12 +100,14 @@ get_calculation:
    ldr r6, [r6] 	     @ up to the desired number. 
 			     @ calculation is used for calculating the next factorial with the 
 			     @ with the result of the previous factorial. 
+			     
    loop:
 	ldr r1, =intInput    @ Have to reload r1 because it gets wiped out. 
    	ldr r1, [r1] 	     @ Read the contents of intInput and store in r1 so it can be compared
    	cmp r1, r4	     @ Compare the input given to the starting point (1).
         bge then             @ If the given input is greater than or equal to the starting point,
         else: b myexit 	     @ branch into the then statement; else, branch to myexit. 
+	
    then:
         mul r5, r6, r4       @ Multiply the starting point with the result of the last factorial.
 			     @ In the first case, it is set to 1. 
