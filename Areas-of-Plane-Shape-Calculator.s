@@ -7,7 +7,7 @@
 @Purpose: 
 @	  
 @	This program is used to get the student to use the stack to pass parameters to and from 
-@	thier own defined subroutines/functions in ARM Assembly.   
+@	their own defined subroutines/functions in ARM Assembly.   
 @	
 @Use these commands to assemble, link, run and debug this program:
 @	as -o Boswell2.o Boswell2.s
