@@ -3,7 +3,7 @@
 @ Email:    tcb0021@uah.edu
 @ Class:    CS309-01 2021
 @ Purpose:  Present to the user a chart of factorials up to any given 
-@ 	    number between 1 and 12. Use as an assignment to cover basics 
+@ 	    number between 1 and 12. Used as an assignment to cover basics 
 @	    for ARM Assembly. 
 @
 @ History: 
@@ -207,4 +207,3 @@ result: .word 1 @ Location used to store the results of each factorial/
 @      r0 - Contains the address of the input format string used to read the user
 @           input value. 
 @      r1 - Must contain the address where the input value is going to be stored.
-
